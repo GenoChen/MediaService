@@ -311,6 +311,10 @@
  */
 - (void)captureOutput:(AVCaptureOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection
 {
+//    CVImageBufferRef pixelBuffer = (CVImageBufferRef)CMSampleBufferGetImageBuffer(sampleBuffer);
+//    CGFloat frameWidth = CVPixelBufferGetWidth(pixelBuffer);
+//    CGFloat frameHeight = CVPixelBufferGetHeight(pixelBuffer);
+//    NSLog(@"frameWidth %lf, frameHeight %lf", frameWidth, frameHeight);
     if ([self.delegate respondsToSelector:@selector(videoCaptureOutputDataCallback:)])
     {
         [self.delegate videoCaptureOutputDataCallback:sampleBuffer];

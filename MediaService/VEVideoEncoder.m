@@ -63,33 +63,9 @@
     if (self = [super init])
     {
         self.videoEncodeParam = param;
-        const size_t attributesSize = 3;
-        CFTypeRef keys[attributesSize] = {
-            kCVPixelBufferOpenGLESCompatibilityKey,
-            kCVPixelBufferIOSurfacePropertiesKey,
-            kCVPixelBufferPixelFormatTypeKey
-        };
-        CFDictionaryRef ioSurfaceValue = CFDictionaryCreate(kCFAllocatorDefault, NULL, NULL, 0,
-                                                            &kCFTypeDictionaryKeyCallBacks,
-                                                            &kCFTypeDictionaryValueCallBacks);
-        int64_t nv12type = kCVPixelFormatType_420YpCbCr8BiPlanarFullRange;
-        CFNumberRef pixelFormat = CFNumberCreate(NULL, kCFNumberLongType, &nv12type);
-        CFTypeRef values[attributesSize] = {kCFBooleanTrue, ioSurfaceValue, pixelFormat};
-        CFDictionaryRef sourceAttributes = CFDictionaryCreate(kCFAllocatorDefault, keys, values, attributesSize,&kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
 
-        if (ioSurfaceValue)
-        {
-            CFRelease(ioSurfaceValue);
-            ioSurfaceValue = NULL;
-        }
-
-        if (pixelFormat)
-        {
-            CFRelease(pixelFormat);
-            pixelFormat = NULL;
-        }
         // 创建硬编码器
-        OSStatus status = VTCompressionSessionCreate(kCFAllocatorDefault, (int)self.videoEncodeParam.encodeWidth, (int)self.videoEncodeParam.encodeHeight, self.videoEncodeParam.encodeType, NULL, sourceAttributes, NULL, encodeOutputDataCallback, (__bridge void *)(self), &_compressionSessionRef);
+        OSStatus status = VTCompressionSessionCreate(NULL, (int)self.videoEncodeParam.encodeWidth, (int)self.videoEncodeParam.encodeHeight, self.videoEncodeParam.encodeType, NULL, NULL, NULL, encodeOutputDataCallback, (__bridge void *)(self), &_compressionSessionRef);
         if (noErr != status)
         {
             NSLog(@"VEVideoEncoder::VTCompressionSessionCreate:failed status:%d", (int)status);
@@ -186,71 +162,9 @@
         NSLog(@"VEVideoEncoder::调用顺序错误");
         return NO;
     }
-    
-    // 设置码率 平均码率
-    if (![self adjustBitRate:self.videoEncodeParam.bitRate])
-    {
-        return NO;
-    }
-    
-    // ProfileLevel，h264的协议等级，不同的清晰度使用不同的ProfileLevel。
-    CFStringRef profileRef = kVTProfileLevel_H264_Baseline_AutoLevel;
-    switch (self.videoEncodeParam.profileLevel)
-    {
-        case VEVideoEncoderProfileLevelBP:
-            profileRef = kVTProfileLevel_H264_Baseline_3_1;
-            break;
-        case VEVideoEncoderProfileLevelMP:
-            profileRef = kVTProfileLevel_H264_Main_3_1;
-            break;
-        case VEVideoEncoderProfileLevelHP:
-            profileRef = kVTProfileLevel_H264_High_3_1;
-            break;
-    }
-    OSStatus status = VTSessionSetProperty(_compressionSessionRef, kVTCompressionPropertyKey_ProfileLevel, profileRef);
-    CFRelease(profileRef);
-    if (noErr != status)
-    {
-        NSLog(@"VEVideoEncoder::kVTCompressionPropertyKey_ProfileLevel failed status:%d", (int)status);
-        return NO;
-    }
-    
-    // 设置实时编码输出（避免延迟）
-    status = VTSessionSetProperty(_compressionSessionRef, kVTCompressionPropertyKey_RealTime, kCFBooleanTrue);
-    if (noErr != status)
-    {
-        NSLog(@"VEVideoEncoder::kVTCompressionPropertyKey_RealTime failed status:%d", (int)status);
-        return NO;
-    }
-    
-    // 配置是否产生B帧
-    status = VTSessionSetProperty(_compressionSessionRef, kVTCompressionPropertyKey_AllowFrameReordering, self.videoEncodeParam.allowFrameReordering ? kCFBooleanTrue : kCFBooleanFalse);
-    if (noErr != status)
-    {
-        NSLog(@"VEVideoEncoder::kVTCompressionPropertyKey_AllowFrameReordering failed status:%d", (int)status);
-        return NO;
-    }
-    
-    // 配置I帧间隔
-    status = VTSessionSetProperty(_compressionSessionRef,
-                                  kVTCompressionPropertyKey_MaxKeyFrameInterval, (__bridge CFTypeRef)@(self.videoEncodeParam.frameRate * self.videoEncodeParam.maxKeyFrameInterval));
-    if (noErr != status)
-    {
-        NSLog(@"VEVideoEncoder::kVTCompressionPropertyKey_MaxKeyFrameInterval failed status:%d", (int)status);
-        return NO;
-    }
-    status = VTSessionSetProperty(_compressionSessionRef,
-                                  kVTCompressionPropertyKey_MaxKeyFrameIntervalDuration,
-                                  (__bridge CFTypeRef)@(self.videoEncodeParam.maxKeyFrameInterval));
-    if (noErr != status)
-    {
-        NSLog(@"VEVideoEncoder::kVTCompressionPropertyKey_MaxKeyFrameIntervalDuration failed status:%d", (int)status);
-        return NO;
-    }
-    
+   
     // 编码器准备编码
-    status = VTCompressionSessionPrepareToEncodeFrames(_compressionSessionRef);
-    
+    OSStatus status = VTCompressionSessionPrepareToEncodeFrames(_compressionSessionRef);
     if (noErr != status)
     {
         NSLog(@"VEVideoEncoder::VTCompressionSessionPrepareToEncodeFrames failed status:%d", (int)status);
@@ -338,10 +252,9 @@
     }
     
     CVImageBufferRef pixelBuffer = (CVImageBufferRef)CMSampleBufferGetImageBuffer(sampleBuffer);
-    CMTime duration = CMTimeMake(90000, (int)self.videoEncodeParam.frameRate);
-    OSStatus status = noErr;
-    NSDictionary *frameProperties = @{(__bridge NSString *)kVTEncodeFrameOptionKey_ForceKeyFrame: @(forceKeyFrame)};;
-    status = VTCompressionSessionEncodeFrame(_compressionSessionRef, pixelBuffer, kCMTimeInvalid, duration, (__bridge CFDictionaryRef)frameProperties, NULL, NULL);
+    NSDictionary *frameProperties = @{(__bridge NSString *)kVTEncodeFrameOptionKey_ForceKeyFrame: @(forceKeyFrame)};
+    
+    OSStatus status = VTCompressionSessionEncodeFrame(_compressionSessionRef, pixelBuffer, kCMTimeInvalid, kCMTimeInvalid, (__bridge CFDictionaryRef)frameProperties, NULL, NULL);
     if (noErr != status)
     {
         NSLog(@"VEVideoEncoder::VTCompressionSessionEncodeFrame failed! status:%d", (int)status);

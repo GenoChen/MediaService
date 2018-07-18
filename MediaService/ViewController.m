@@ -36,6 +36,8 @@
     
     // 初始化视频采集
     VCVideoCapturerParam *param = [[VCVideoCapturerParam alloc] init];
+    param.sessionPreset = AVCaptureSessionPreset1280x720;
+    
     self.videoCapture = [[VCVideoCapturer alloc] initWithCaptureParam:param error:nil];
     self.videoCapture.delegate = self;
     
@@ -43,6 +45,7 @@
     VEVideoEncoderParam *encodeParam = [[VEVideoEncoderParam alloc] init];
     encodeParam.encodeWidth = 180;
     encodeParam.encodeHeight = 320;
+    encodeParam.bitRate = 512 * 1024;
     _videoEncoder = [[VEVideoEncoder alloc] initWithParam:encodeParam];
     _videoEncoder.delegate = self;
     [_videoEncoder startVideoEncode];
