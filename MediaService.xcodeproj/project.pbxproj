@@ -19,6 +19,8 @@
 		A515930320EBBA97004203E2 /* VCVideoCapturer.m in Sources */ = {isa = PBXBuildFile; fileRef = A515930120EBBA97004203E2 /* VCVideoCapturer.m */; };
 		A515930620EBBAA1004203E2 /* H264Decoder.m in Sources */ = {isa = PBXBuildFile; fileRef = A515930420EBBAA1004203E2 /* H264Decoder.m */; };
 		A515930920EBBC7D004203E2 /* VEVideoEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = A515930720EBBC7D004203E2 /* VEVideoEncoder.m */; };
+		B521A9D42123CDD9003F9397 /* MetalPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = B521A9D32123CDD9003F9397 /* MetalPlayer.m */; };
+		B521A9D62123D1A6003F9397 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = B521A9D52123D1A6003F9397 /* Shaders.metal */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,6 +44,9 @@
 		A515930520EBBAA1004203E2 /* H264Decoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = H264Decoder.h; sourceTree = "<group>"; };
 		A515930720EBBC7D004203E2 /* VEVideoEncoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VEVideoEncoder.m; sourceTree = "<group>"; };
 		A515930820EBBC7D004203E2 /* VEVideoEncoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VEVideoEncoder.h; sourceTree = "<group>"; };
+		B521A9D22123CDD9003F9397 /* MetalPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MetalPlayer.h; sourceTree = "<group>"; };
+		B521A9D32123CDD9003F9397 /* MetalPlayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MetalPlayer.m; sourceTree = "<group>"; };
+		B521A9D52123D1A6003F9397 /* Shaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,6 +91,9 @@
 				A515930120EBBA97004203E2 /* VCVideoCapturer.m */,
 				A515930020EBBA96004203E2 /* VPVideoStreamPlayLayer.h */,
 				A51592FF20EBBA96004203E2 /* VPVideoStreamPlayLayer.m */,
+				B521A9D22123CDD9003F9397 /* MetalPlayer.h */,
+				B521A9D32123CDD9003F9397 /* MetalPlayer.m */,
+				B521A9D52123D1A6003F9397 /* Shaders.metal */,
 				A515930520EBBAA1004203E2 /* H264Decoder.h */,
 				A515930420EBBAA1004203E2 /* H264Decoder.m */,
 				A515930820EBBC7D004203E2 /* VEVideoEncoder.h */,
@@ -177,11 +185,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B521A9D42123CDD9003F9397 /* MetalPlayer.m in Sources */,
 				A515930920EBBC7D004203E2 /* VEVideoEncoder.m in Sources */,
 				A515930620EBBAA1004203E2 /* H264Decoder.m in Sources */,
 				A50A296720DD4C42006757F9 /* ViewController.m in Sources */,
 				A50A297220DD4C44006757F9 /* main.m in Sources */,
 				A50A296420DD4C42006757F9 /* AppDelegate.m in Sources */,
+				B521A9D62123D1A6003F9397 /* Shaders.metal in Sources */,
 				A515930320EBBA97004203E2 /* VCVideoCapturer.m in Sources */,
 				A515930220EBBA97004203E2 /* VPVideoStreamPlayLayer.m in Sources */,
 			);

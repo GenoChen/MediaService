@@ -11,13 +11,21 @@
 #import "VEVideoEncoder.h"
 #import "H264Decoder.h"
 #import "VCVideoCapturer.h"
+#import "MetalPlayer.h"
+
+#define USED_METAL
 
 @interface ViewController () <H264DecoderDelegate, VEVideoEncoderDelegate, VCVideoCapturerDelegate>
 
 /** 视频流播放器 */
+#ifdef USED_METAL
+@property (nonatomic, strong) MetalPlayer *playLayer;
+#else
 @property (nonatomic, strong) VPVideoStreamPlayLayer *playLayer;
+#endif
 /** 解码播放视图 */
 @property (nonatomic, strong) AVCaptureVideoPreviewLayer *recordLayer;
+
 /** H264解码器 */
 @property (nonatomic, strong) H264Decoder *h264Decoder;
 /** 视频采集 */
@@ -65,7 +73,11 @@
     self.recordLayer.frame = CGRectMake(layerMargin, layerY, layerW, layerH);
 
     // 初始化视频编码解码后的播放画面
+#ifdef USED_METAL
+    self.playLayer = [[MetalPlayer alloc] initWithFrame:CGRectMake(layerMargin * 2 + layerW, layerY, layerW, layerH)];
+#else
     self.playLayer = [[VPVideoStreamPlayLayer alloc] initWithFrame:CGRectMake(layerMargin * 2 + layerW, layerY, layerW, layerH)];
+#endif
     self.playLayer.backgroundColor = [UIColor blackColor].CGColor;
     
     CGFloat buttonW = self.view.frame.size.width * 0.4;
